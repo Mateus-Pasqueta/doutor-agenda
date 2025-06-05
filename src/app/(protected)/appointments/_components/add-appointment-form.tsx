@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import dayjs from "dayjs";
@@ -13,6 +14,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { addAppointment } from "@/actions/add-appointment";
+import { getAvailableTimes } from "@/actions/get-available-times";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
