@@ -14,6 +14,7 @@ import {
   PageHeaderContent,
   PageTitle,
 } from "@/components/ui/page-container";
+import { getDashboard } from "@/data/get-dashboard";
 import { auth } from "@/lib/auth";
 
 import { appointmentsTableColumns } from "../appointments/_components/table-columns";
