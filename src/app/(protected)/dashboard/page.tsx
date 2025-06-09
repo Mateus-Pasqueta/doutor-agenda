@@ -20,6 +20,7 @@ import { appointmentsTableColumns } from "../appointments/_components/table-colu
 import AppointmentsChart from "./_components/appointments-chart";
 import { DatePicker } from "./_components/date-picker";
 import StatsCards from "./_components/stats-cards";
+import TopDoctors from "./_components/top-doctors";
 
 interface DashboardPageProps {
   searchParams: Promise<{
