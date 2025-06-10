@@ -11,22 +11,17 @@ export const createStripeCheckout = actionClient.action(async () => {
     headers: await headers(),
   });
   if (!session?.user) {
-    throw new Error("User not authenticated");
+    throw new Error("Unauthorized");
   }
-  if (!session.user.clinic) {
-    throw new Error("Clinic not found");
-  }
-
   if (!process.env.STRIPE_SECRET_KEY) {
     throw new Error("Stripe secret key not found");
   }
-
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
     apiVersion: "2025-05-28.basil",
   });
   const { id: sessionId } = await stripe.checkout.sessions.create({
-    mode: "subscription",
     payment_method_types: ["card"],
+    mode: "subscription",
     success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
     cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
     subscription_data: {
