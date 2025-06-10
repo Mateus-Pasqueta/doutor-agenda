@@ -105,13 +105,20 @@ export const getDashboard = async ({ from, to, session }: Params) => {
     db.query.appointmentsTable.findMany({
       where: and(
         eq(appointmentsTable.clinicId, session.user.clinic.id),
-        gte(appointmentsTable.date, new Date()),
-        lte(appointmentsTable.date, new Date()),
+        and(
+          gte(appointmentsTable.date, dayjs().startOf("day").toDate()),
+          lte(
+            appointmentsTable.date,
+            dayjs().add(10, "day").endOf("day").toDate(),
+          ),
+        ),
       ),
       with: {
         patient: true,
         doctor: true,
       },
+      orderBy: appointmentsTable.date,
+      limit: 10,
     }),
     db
       .select({
