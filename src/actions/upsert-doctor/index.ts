@@ -3,22 +3,20 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
 
 import { db } from "@/db";
 import { doctorsTable } from "@/db/schema";
-import { auth } from "@/lib/auth";
-import { actionClient } from "@/lib/next-safe-action";
+import { protectedWithClinicActionClient } from "@/lib/next-safe-action";
 
 import { upsertDoctorSchema } from "./schema";
 
 dayjs.extend(utc);
 
-export const upsertDoctor = actionClient
+export const upsertDoctor = protectedWithClinicActionClient
   .schema(upsertDoctorSchema)
-  .action(async ({ parsedInput }) => {
-    const availableFromTime = parsedInput.availableFromTime;
-    const availableToTime = parsedInput.availableToTime;
+  .action(async ({ parsedInput, ctx }) => {
+    const availableFromTime = parsedInput.availableFromTime; // 15:30:00
+    const availableToTime = parsedInput.availableToTime; // 16:00:00
 
     const availableFromTimeUTC = dayjs()
       .set("hour", parseInt(availableFromTime.split(":")[0]))
@@ -31,21 +29,12 @@ export const upsertDoctor = actionClient
       .set("second", parseInt(availableToTime.split(":")[2]))
       .utc();
 
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-    if (!session?.user) {
-      throw new Error("Usuário não autenticado");
-    }
-    if (!session.user.clinic) {
-      throw new Error("Clínica não encontrada");
-    }
     await db
       .insert(doctorsTable)
       .values({
-        id: parsedInput.id,
         ...parsedInput,
-        clinicId: session?.user.clinic?.id,
+        id: parsedInput.id,
+        clinicId: ctx.user.clinic.id,
         availableFromTime: availableFromTimeUTC.format("HH:mm:ss"),
         availableToTime: availableToTimeUTC.format("HH:mm:ss"),
       })
