@@ -25,7 +25,7 @@ export const addAppointment = protectedWithClinicActionClient
     );
     if (!isTimeAvailable) {
       throw new Error("Time not available");
-  }
+    }
     const appointmentDateTime = dayjs(parsedInput.date)
       .set("hour", parseInt(parsedInput.time.split(":")[0]))
       .set("minute", parseInt(parsedInput.time.split(":")[1]))
